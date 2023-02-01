@@ -25,7 +25,7 @@ if __name__ == "__main__":
     
     from_db = []
     for result in my_data_rows:
-  　　　result = result
+  　　　result = list(result)
   　　　from_db.append(result)
     feature = ["height","weight","blood type","age"]
     my_data_rows2=pandas.DataFrame(from_db,columns=feature)
