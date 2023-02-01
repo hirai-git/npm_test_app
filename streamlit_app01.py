@@ -22,5 +22,5 @@ if __name__ == "__main__":
     my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     query_file_path = 'npmdbtest.sql'
     my_data_rows=run_query(query_file_path)
-    pandas.DataFrame(my_data_rows,columns=["CALENDAR_DATE","CODE","KANJI_NAME","PRICE"])
+    streamlit.DataFrame(my_data_rows)
     my_cnx.close()
