@@ -2,7 +2,7 @@ import streamlit
 import pandas
 import requests
 import snowflake.connector
-from IPython.display import display
+
 
 from urllib.error import URLError
 #import snowflake.connector
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         from_db.append(result)
     feature = ["height","weight","blood type","age"]
     my_data_rows2=pandas.DataFrame(from_db,columns=feature)
-    display(my_data_rows2)
+    streamlit.dataframe(my_data_rows2)
     
     
     #streamlit.dataframe(my_data_rows2)
