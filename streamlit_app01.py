@@ -21,4 +21,4 @@ if __name__ == "__main__":
     my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     my_data_rows=run_query()
     my_cnx.close()
-    streamlit.dataframe(my_data_rows)
+    streamlit.table(my_data_rows)
