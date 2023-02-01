@@ -16,14 +16,13 @@ def run_query(query_file_path):
    with my_cnx.cursor() as cur:
             query = get_query(query_file_path)
             cur.execute(query)
-            rows = cur.fetchall()
-            streamlit.dataframe(rows)
-      
-
+            return cur.fetchall()
+            
 if __name__ == "__main__":
     my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     query_file_path = 'npmdbtest.sql'
-    run_query(query_file_path)
+    my_data_rows=run_query(query_file_path)
+    streamlit.dataframe(rows)
     my_cnx.close()
       
 
