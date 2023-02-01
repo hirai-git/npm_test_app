@@ -31,5 +31,6 @@ if __name__ == "__main__":
     my_data_rows2=pandas.DataFrame(from_db,columns=feature)
     display(my_data_rows2)
     
+    
     #streamlit.dataframe(my_data_rows2)
     my_cnx.close()
