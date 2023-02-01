@@ -37,3 +37,7 @@ if __name__ == "__main__":
     
     #streamlit.dataframe(my_data_rows2)
     my_cnx.close()
+
+    #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
+    #https://linus-mk.hatenablog.com/entry/pandas_convert_float_to_int
+        
