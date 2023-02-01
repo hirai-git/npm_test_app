@@ -24,5 +24,6 @@ if __name__ == "__main__":
     my_data_rows=run_query(query_file_path)
     feature = ["height","weight","blood type","age"]
     my_data_rows2=pandas.dataframe(my_data_row,columns=feature)
-    streamlit.dataframe(my_data_rows2)
+    my_data_rows2
+    #streamlit.dataframe(my_data_rows2)
     my_cnx.close()
