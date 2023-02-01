@@ -17,8 +17,7 @@ def run_query(query_file_path):
             query = get_query(query_file_path)
             cur.execute(query)
             rows = cur.fetchall()
-            for row in rows:
-      streamlit.dataframe(row)
+            streamlit.dataframe(rows)
       
 
 if __name__ == "__main__":
