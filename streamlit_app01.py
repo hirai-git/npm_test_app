@@ -4,6 +4,8 @@ import requests
 import snowflake.connector
 from urllib.error import URLError
 
+streamlit hello
+
 #import snowflake.connector
 streamlit.header("NPM個別銘柄情報")
 
