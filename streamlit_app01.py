@@ -22,8 +22,14 @@ if __name__ == "__main__":
     my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     query_file_path = 'npmdbtest.sql'
     my_data_rows=run_query(query_file_path)
+    
+    from_db = []
+    for result in my_data_rows:
+  　　　result = result
+  　　　from_db.append(result)
     feature = ["height","weight","blood type","age"]
-    my_data_rows2=pandas.DataFrame(my_data_row,columns=feature)
-    my_data_rows2
+    my_data_rows2=pandas.DataFrame(from_db,columns=feature)
+    display(my_data_rows2)
+    
     #streamlit.dataframe(my_data_rows2)
     my_cnx.close()
