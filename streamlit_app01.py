@@ -28,8 +28,10 @@ if __name__ == "__main__":
     for result in my_data_rows:
         result = list(result)
         from_db.append(result)
+
     feature = ["Date","code","KANJI_NM","Price"]
     my_data_rows2=pandas.DataFrame(from_db,columns=feature)
+    my_data_rows2['Price']=my_data_rows2['Price'].astype('int')
     streamlit.dataframe(my_data_rows2)
     
     
