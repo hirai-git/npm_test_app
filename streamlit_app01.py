@@ -21,7 +21,7 @@ if __name__ == "__main__":
     my_data_rows2 = pandas.read_sql(query,my_cnx)
 
 
-my_data_rows2.loc[:.'Price']=my_data_rows2.loc[:.'Price'].astype('int')
+my_data_rows2.loc[:,'Price']=my_data_rows2.loc[:,'Price'].astype('int')
 streamlit.dataframe(my_data_rows2)
 
 
