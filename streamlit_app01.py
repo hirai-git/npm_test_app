@@ -38,12 +38,12 @@ if __name__ == "__main__":
     my_data_rows2=pandas.DataFrame(from_db,columns=feature)
     my_data_rows2['Price']=my_data_rows2['Price'].astype('int')
 '''
-    
-    streamlit.dataframe(my_data_rows2)
-    
-    
-    #streamlit.dataframe(my_data_rows2)
-    my_cnx.close()
+
+streamlit.dataframe(my_data_rows2)
+
+
+#streamlit.dataframe(my_data_rows2)
+my_cnx.close()
 
     #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
     #https://linus-mk.hatenablog.com/entry/pandas_convert_float_to_int
