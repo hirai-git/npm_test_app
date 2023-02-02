@@ -19,8 +19,9 @@ if __name__ == "__main__":
     query = get_query(query_file_path)
     #my_data_rows=run_query(query_file_path)
     my_data_rows2 = pandas.read_sql(query,my_cnx)
-    
-my_data_rows2['Price']=my_data_rows2['Price'].astype('int')
+
+
+♯my_data_rows2['Price']=my_data_rows2['Price'].astype('int')
 streamlit.dataframe(my_data_rows2)
 
 
