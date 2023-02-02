@@ -12,20 +12,20 @@ def get_query(query_file_path):
     with open(query_file_path, 'r', encoding='utf-8') as f:
         query = f.read()
     return query
-
-'''
+ '''
 def run_query(query_file_path):
    with my_cnx.cursor() as cur:
             query = get_query(query_file_path)
             cur.execute(query)
             return cur.fetchall()
-'''
-
+ '''
 if __name__ == "__main__":
     my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     query_file_path = 'npmdbtest.sql'
+    query = get_query(query_file_path)
     #my_data_rows=run_query(query_file_path)
-    my_data_rows2 = pandas.read_sql(query_file_path,my_cnx)
+    my_data_rows2 = pandas.read_sql(query,my_cnx)
+    
     '''
     from_db = []
     for result in my_data_rows:
