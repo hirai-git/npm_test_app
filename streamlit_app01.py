@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import snowflake.connector
+import datetime
 
 import os
 from dotenv import load_dotenv
@@ -41,24 +42,29 @@ def get_share_data():
 kabulist =get_share_data()
 
 selector = st.sidebar.selectbox( "銘柄CD選択:",list(kabulist.index))
+date1 = st.sidebar.date_input("from-date",datetime.date(2020, 1, 1))
+date1 = format(date1, '%Y%m%d')
+date2 = st.sidebar.date_input("to-date",datetime.date(2022, 12, 31))
+date2 = format(date2, '%Y%m%d')
 
 st.header("NPMdata")
 meigara_to_show = kabulist.loc[selector]
 st.write(meigara_to_show)
 
 
-def get_query( kabuid:str, filename:str):
+def get_query( kabuid:str, date_from:str, date_to:str, filename:str):
     with open(filename, 'r', encoding='utf-8') as f:
-        query = f.read().format(kabuid=kabuid)
+        query = f.read().format(kabuid=kabuid,date_from=date_from,date_to=date_to)
     return query
 
 if __name__ == "__main__":
     #my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     con= get_connection()
     query_file_path = 'npmdbtest.sql'
-    query = get_query(kabuid=selector,filename=query_file_path)
+    query = get_query(kabuid=selector,date_from=date1,date_to=date2,filename=query_file_path)
     #my_data_rows=run_query(query_file_path)
     my_data = pd.read_sql(query,con)
+    con.close()
 
 
 st.subheader('株価')
@@ -67,3 +73,8 @@ my_data.loc[:,'PRICE']=my_data.loc[:,'PRICE'].astype('int')
 my_chart= my_data.set_index("CALENDAR_DATE")["PRICE"]
 st.line_chart(my_chart)
 st.dataframe(my_data)
+
+
+    #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
+    #https://linus-mk.hatenablog.com/entry/pandas_convert_float_to_int
+        
