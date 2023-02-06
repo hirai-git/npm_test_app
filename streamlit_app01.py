@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import snowflake.connector
-import datetime
+import datetime as dt
 
 import os
 from dotenv import load_dotenv
@@ -28,13 +28,18 @@ def get_connection():
 
 def get_share_data():
    con_npm = get_connection()
-   querylist = """SELECT distinct SECURITY_CODE,KANJI_NAME
-                FROM NPMDB_test.NQIUSER1.ATTRIBUTES
-                WHERE CALENDAR_DATE = '20230123' 
-                order by SECURITY_CODE desc"""
+   querylist = """select a1.SCD ,(a1.SCD ||':'||a2.KANJI_NAME) as "銘柄"
+                    from 
+					(SELECT distinct SECURITY_CODE as SCD FROM NPMDB_test.NQIUSER1.ATTRIBUTES WHERE CALENDAR_DATE = '20230123') a1
+                join NPMDB_test.NQIUSER1.ATTRIBUTES a2 
+				on a1.SCD=a2.SECURITY_CODE
+                WHERE a2.CALENDAR_DATE = '20230123'
+                and  a1.SCD<>'0000'
+                order by a1.SCD 
+                """
    querycd = pd.read_sql(querylist,con_npm)
-   querycd = querycd.set_index('SECURITY_CODE')
-
+   querycd = querycd.set_index('SCD')
+   con_npm.close()
    return querycd
 
 
@@ -42,14 +47,20 @@ def get_share_data():
 kabulist =get_share_data()
 
 selector = st.sidebar.selectbox( "銘柄CD選択:",list(kabulist.index))
-date1 = st.sidebar.date_input("from-date",datetime.date(2020, 1, 1))
+date1 = st.sidebar.date_input("from-date",
+                              value=dt.date(2020, 1, 1),
+                              min_value=dt.date(1992,1,1),
+                              max_value=dt.date.today())
 date1 = format(date1, '%Y%m%d')
-date2 = st.sidebar.date_input("to-date",datetime.date(2022, 12, 31))
+date2 = st.sidebar.date_input("to-date",
+                              value=dt.date.today(),
+                              min_value=dt.date(1992,1,1),
+                              max_value=dt.date.today())
 date2 = format(date2, '%Y%m%d')
 
 st.header("NPMdata")
 meigara_to_show = kabulist.loc[selector]
-st.write(meigara_to_show)
+st.dataframe(meigara_to_show)
 
 
 def get_query( kabuid:str, date_from:str, date_to:str, filename:str):
@@ -57,7 +68,9 @@ def get_query( kabuid:str, date_from:str, date_to:str, filename:str):
         query = f.read().format(kabuid=kabuid,date_from=date_from,date_to=date_to)
     return query
 
-if __name__ == "__main__":
+st.subheader('株価グラフ表示')
+#if __name__ == "__main__":
+if st.button('push display'):   
     #my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     con= get_connection()
     query_file_path = 'npmdbtest.sql'
@@ -65,14 +78,10 @@ if __name__ == "__main__":
     #my_data_rows=run_query(query_file_path)
     my_data = pd.read_sql(query,con)
     con.close()
-
-
-st.subheader('株価')
-
-my_data.loc[:,'PRICE']=my_data.loc[:,'PRICE'].astype('int')
-my_chart= my_data.set_index("CALENDAR_DATE")["PRICE"]
-st.line_chart(my_chart)
-st.dataframe(my_data)
+    my_data.loc[:,'PRICE']=my_data.loc[:,'PRICE'].astype('int')
+    my_chart= my_data.set_index("CALENDAR_DATE")["PRICE"]
+    st.line_chart(my_chart)
+    st.dataframe(my_data)
 
 
     #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
