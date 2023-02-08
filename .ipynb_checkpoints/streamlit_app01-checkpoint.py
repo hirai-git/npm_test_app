@@ -3,7 +3,6 @@ import pandas as pd
 import requests
 import snowflake.connector
 import datetime as dt
-import jpbizday
 
 import os
 from dotenv import load_dotenv
@@ -27,26 +26,27 @@ def get_connection():
     #print(data)
     return con
 
-def get_share_data(kabulist_date:str):
+def get_share_data():
    con_npm = get_connection()
-   querylist = f"""select distinct SECURITY_CODE, KANJI_NAME
-                    from NPMDB_test.NQIUSER1.ATTRIBUTES 
-                    WHERE CALENDAR_DATE = {kabulist_date}
-                    and  SECURITY_CODE not like '%0000%'
-                    order by SECURITY_CODE;
+   querylist = """select a1.SCD ,(a1.SCD ||':'||a2.KANJI_NAME) as "銘柄"
+                    from 
+					(SELECT distinct SECURITY_CODE as SCD FROM NPMDB_test.NQIUSER1.ATTRIBUTES WHERE CALENDAR_DATE = '20230123') a1
+                join NPMDB_test.NQIUSER1.ATTRIBUTES a2 
+				on a1.SCD=a2.SECURITY_CODE
+                WHERE a2.CALENDAR_DATE = '20230123'
+                and  a1.SCD<>'0000'
+                order by a1.SCD 
                 """
    querycd = pd.read_sql(querylist,con_npm)
-   querycd = querycd.set_index('SECURITY_CODE')
+   querycd = querycd.set_index('SCD')
    con_npm.close()
    return querycd
 
 
-# 第一営業日取得
-kabulist_date = format(jpbizday.first_bizday(dt.datetime.today()), '%Y%m%d')
-kabulist =get_share_data(kabulist_date)
+# Using "with" notation
+kabulist =get_share_data()
 
 selector = st.sidebar.selectbox( "銘柄CD選択:",list(kabulist.index))
-selector2 = selector[0:4] 
 date1 = st.sidebar.date_input("from-date",
                               value=dt.date(2020, 1, 1),
                               min_value=dt.date(1992,1,1),
@@ -74,16 +74,15 @@ if st.button('push display'):
     #my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
     con= get_connection()
     query_file_path = 'npmdbtest.sql'
-    query = get_query(kabuid=selector2,date_from=date1,date_to=date2,filename=query_file_path)
+    query = get_query(kabuid=selector,date_from=date1,date_to=date2,filename=query_file_path)
     #my_data_rows=run_query(query_file_path)
     my_data = pd.read_sql(query,con)
     con.close()
-    
     my_data.loc[:,'PRICE']=my_data.loc[:,'PRICE'].astype('int')
     my_chart= my_data.set_index("CALENDAR_DATE")["PRICE"]
     st.line_chart(my_chart)
     st.dataframe(my_data)
-    
+
 
     #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
     #https://linus-mk.hatenablog.com/entry/pandas_convert_float_to_int
