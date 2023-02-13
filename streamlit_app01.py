@@ -5,6 +5,7 @@ import snowflake.connector
 import datetime as dt
 import jpbizday
 
+
 import os
 from dotenv import load_dotenv
 # .envファイルの内容を読み込見込む
@@ -83,7 +84,15 @@ if st.button('push display'):
     my_chart= my_data.set_index("CALENDAR_DATE")["PRICE"]
     st.line_chart(my_chart)
     st.dataframe(my_data)
-    
+
+    st.subheader('20日移動平均株価')
+    my_data2=my_chart
+    my_data2=my_data2.rolling(20).apply(lambda x: x.mean())
+    st.line_chart(my_data2)
+    st.dataframe(my_data2)
+
+
+
 
     #https://www.freecodecamp.org/japanese/news/connect-python-with-sql/
     #https://linus-mk.hatenablog.com/entry/pandas_convert_float_to_int
